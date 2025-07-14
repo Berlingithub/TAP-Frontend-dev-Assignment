@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Air Quality Monitoring Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>🌍 Air Quality Monitor</h1>
+            <div class="controls">
+                <button id="locationBtn" class="btn primary">📍 Enable Location</button>
+                <button id="refreshBtn" class="btn secondary">🔄 Refresh Data</button>
+                <select id="timeRange" class="filter-select">
+                    <option value="24h">Last 24 Hours</option>
+                    <option value="7d">Last 7 Days</option>
+                    <option value="30d">Last 30 Days</option>
+                </select>
+                <div id="networkStatus" class="network-status"></div>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card aqi-card">
+                <div class="stat-header">
+                    <h3>Current AQI</h3>
+                    <div id="aqiTrend" class="trend-indicator">📈</div>
+                </div>
+                <div id="currentAQI" class="aqi-value">--</div>
+                <div id="aqiCategory" class="aqi-category">Loading...</div>
+                <div id="lastUpdated" class="last-updated">Last updated: --</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>📍 Location</h3>
+                <div id="currentLocation" class="location-info">Enable location to see data</div>
+                <div id="coordinates" class="coordinates">--</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>🌡️ Temperature</h3>
+                <div id="temperature" class="metric-value">--°C</div>
+                <div class="metric-label">Feels like <span id="feelsLike">--°C</span></div>
+            </div>
+
+            <div class="stat-card">
+                <h3>💧 Humidity</h3>
+                <div id="humidity" class="metric-value">--%</div>
+                <div class="metric-label">Relative humidity</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>💨 Wind</h3>
+                <div id="windSpeed" class="metric-value">-- km/h</div>
+                <div class="metric-label">Direction: <span id="windDirection">--</span></div>
+            </div>
+
+            <div class="stat-card">
+                <h3>👁️ Visibility</h3>
+                <div id="visibility" class="metric-value">-- km</div>
+                <div class="metric-label">Atmospheric visibility</div>
+            </div>
+        </div>
+
+        <div class="charts-section">
+            <div class="chart-container">
+                <h3>📊 AQI Trend (24 Hours)</h3>
+                <canvas id="aqiChart" width="800" height="300"></canvas>
+                <div class="chart-legend">
+                    <div class="legend-item">
+                        <span class="legend-color good"></span>
+                        <span>Good (0-50)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color moderate"></span>
+                        <span>Moderate (51-100)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color unhealthy-sensitive"></span>
+                        <span>Unhealthy for Sensitive (101-150)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color unhealthy"></span>
+                        <span>Unhealthy (151-200)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color very-unhealthy"></span>
+                        <span>Very Unhealthy (201-300)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-color hazardous"></span>
+                        <span>Hazardous (301+)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3>🔬 Pollutant Breakdown</h3>
+                <canvas id="pollutantChart" width="400" height="300"></canvas>
+                <div class="pollutant-details">
+                    <div class="pollutant-item">
+                        <span class="pollutant-name">PM2.5</span>
+                        <span id="pm25Value" class="pollutant-value">-- μg/m³</span>
+                    </div>
+                    <div class="pollutant-item">
+                        <span class="pollutant-name">PM10</span>
+                        <span id="pm10Value" class="pollutant-value">-- μg/m³</span>
+                    </div>
+                    <div class="pollutant-item">
+                        <span class="pollutant-name">O₃</span>
+                        <span id="o3Value" class="pollutant-value">-- μg/m³</span>
+                    </div>
+                    <div class="pollutant-item">
+                        <span class="pollutant-name">NO₂</span>
+                        <span id="no2Value" class="pollutant-value">-- μg/m³</span>
+                    </div>
+                    <div class="pollutant-item">
+                        <span class="pollutant-name">SO₂</span>
+                        <span id="so2Value" class="pollutant-value">-- μg/m³</span>
+                    </div>
+                    <div class="pollutant-item">
+                        <span class="pollutant-name">CO</span>
+                        <span id="coValue" class="pollutant-value">-- mg/m³</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="monitoring-stations" id="monitoringStations">
+            <h3>🏭 Nearby Monitoring Stations</h3>
+            <div class="stations-grid" id="stationsGrid">
+                <!-- Stations will be dynamically loaded here -->
+            </div>
+        </div>
+
+        <div class="health-recommendations">
+            <h3>💡 Health Recommendations</h3>
+            <div id="healthAdvice" class="health-advice">
+                <div class="advice-item">
+                    <span class="advice-icon">🏃‍♂️</span>
+                    <span class="advice-text">Enable location to get personalized health recommendations</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading-indicator" id="loadingIndicator">
+            <div class="spinner"></div>
+            <p>Fetching air quality data...</p>
+        </div>
+    </div>
+
+    <script src="js/dataStorage.js"></script>
+    <script src="js/networkManager.js"></script>
+    <script src="js/locationManager.js"></script>
+    <script src="js/chartRenderer.js"></script>
+    <script src="js/backgroundMonitor.js"></script>
+    <script src="js/stationObserver.js"></script>
+    <script src="js/aqiDashboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
